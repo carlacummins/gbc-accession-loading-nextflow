@@ -1,1 +1,21 @@
-gbc-github/epmc_accession_loading/cursors.txt
+AoIIQBMKIig1MjQzMjIzNw==, 2
+AoIIQArLzSg1MTc3Mzg0Mg==, 3
+AoIIQAQRGig1MTc5MzMxMg==, 4
+AoIIQANXICg1MjE4MDU1MQ==, 5
+AoIIQAJtEig1MTk4NDE4Mw==, 6
+AoIIQACr9Sg1MjQxNDgwNg==, 7
+AoIIP/4Z0Sg1MjQyNDE0NA==, 8
+AoIIP/yjFSg1MTY3NDI2Nw==, 9
+AoIIP/neAyg1MjM3NzgxMw==, 10
+AoIIP/gUtig1MjQxNDc5NQ==, 11
+AoIIP/aWtSg1MjIwOTg0Mg==, 12
+AoIIP/Qd6Sg1MTcyMDQyOA==, 13
+AoIIP/IRpSg1MTkzNjYwMg==, 14
+AoIIP/E+0Cg1MjM1MjczOQ==, 15
+AoIIP+8bJCg1MjQxNjQ5Ng==, 16
+AoIIP+1hjSg1MTc4MTA5OQ==, 17
+AoIIP+wqrSg1MjM3MTAwNw==, 18
+AoIIP+rW5Cg1MTcyOTkwMQ==, 19
+AoIIP+pc6ig1MjQzNjExOQ==, 20
+AoIIP+lqPig1MjIwMDQ1OQ==, 21
+AoIIP+i9gyg1MjIyMDAyMA==, 22

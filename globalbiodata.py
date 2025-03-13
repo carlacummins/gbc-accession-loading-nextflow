@@ -1,1 +1,1 @@
-gbc-github/epmc_accession_loading/globalbiodata.py
+../globalbiodata.py

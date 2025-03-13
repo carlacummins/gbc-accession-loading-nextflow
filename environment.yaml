@@ -1,1 +1,20 @@
-gbc-github/epmc_accession_loading/environment.yaml
+name: gbc-conda
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python = 3.9
+  - pip
+  - tree
+  - pymysql
+  - cloud-sql-python-connector[pymysql]
+  - sqlalchemy
+  - pandas
+  - googlemaps
+  - requests
+  - spacy
+  - pip:
+    - argparse
+    - lxml[html_clean]
+    - locationtagger
+
