@@ -12,7 +12,7 @@ process QUERY_EUROPEPMC {
 
     output:
     path("epmc_jsons/**.json"), emit: epmc_jsons
-    path("cursors.txt"), emit: cursors
+    // path("cursors.txt"), emit: cursors
 
     script:
     """
