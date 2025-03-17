@@ -18,6 +18,7 @@ parser.add_argument('--accession-types', type=str, help='Path to JSON file with 
 parser.add_argument('--outdir', type=str, help='Output directory for results', required=True)
 
 parser.add_argument('--db', type=str, help='Database to use (format: instance_name/db_name)', required=True)
+parser.add_argument('--dbcreds', type=str, help='Path to JSON file with SQL credentials')
 parser.add_argument('--sqluser', type=str, help='SQL user', default=os.environ.get("CLOUD_SQL_USER"))
 parser.add_argument('--sqlpass', type=str, help='SQL password', default=os.environ.get("CLOUD_SQL_PASSWORD"))
 
@@ -30,13 +31,23 @@ limit = args.limit if args.limit > 0 else None
 if not os.path.exists(args.outdir):
     os.makedirs(args.outdir)
 
+# setup SQL connection
+sqluser, sqlpass = None, None
+if args.dbcreds:
+    creds = json.load(open(args.dbcreds, 'r'))
+    sqluser, sqlpass = creds.get('user'), creds.get('pass')
+elif args.sqluser and args.sqlpass:
+    sqluser, sqlpass = args.sqluser, args.sqlpass
+else:
+    sys.exit("Error: No SQL credentials provided")
+
 gcp_connector = Connector()
 instance, db_name = args.db.split('/')
 def getcloudconn() -> pymysql.connections.Connection:
     conn: pymysql.connections.Connection = gcp_connector.connect(
         instance, "pymysql",
-        user=args.sqluser,
-        password=args.sqlpass,
+        user=sqluser,
+        password=sqlpass,
         db=db_name
     )
     return conn

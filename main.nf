@@ -13,6 +13,7 @@ workflow {
             params.page_size,
             limit,
             params.db,
+            params.db_creds
             // params.db_user,
             // params.db_pass
         )
@@ -22,6 +23,6 @@ workflow {
         query.epmc_jsons
         | flatten
         | map { json ->
-            [json, file(params.accession_types), params.db] //, params.db_user, params.db_pass]
+            [json, file(params.accession_types), params.db, params.db_creds] //, params.db_user, params.db_pass]
         } | WRITE_TO_GBC
 }
