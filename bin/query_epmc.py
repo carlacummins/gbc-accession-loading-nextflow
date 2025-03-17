@@ -56,7 +56,7 @@ cloud_engine = db.create_engine("mysql+pymysql://", creator=getcloudconn, pool_r
 cloud_conn = cloud_engine.connect()
 
 max_retries = 10
-def query_europepmc(endpoint, request_params, retry_count=0):
+def query_europepmc(endpoint, request_params, retry_count=0, graceful_exit=False):
     response = requests.get(endpoint, params=request_params)
     if response.status_code == 200:
         data = response.json()
@@ -68,7 +68,8 @@ def query_europepmc(endpoint, request_params, retry_count=0):
             time.sleep(random.randint(1, 15))
             return query_europepmc(endpoint, request_params, retry_count=retry_count+1)
         else:
-            sys.exit(f"Error: No data found for {endpoint} / {request_params} after {max_retries} retries\n")
+            sys.stderr.write(f"Error: No data found for {endpoint} / {request_params} after {max_retries} retries\n")
+            sys.exit(0) if graceful_exit else sys.exit(1)
 
     # Handle empty results
     if data['hitCount'] == 0:
@@ -94,19 +95,6 @@ epmc_fields = [
     'keywordList', 'meshHeadingList', 'citedByCount', 'hasTMAccessionNumbers'
 ]
 
-# if os.path.exists(args.cursor_file):
-#     with open(args.cursor_file, 'r') as f:
-#         lines = f.readlines()
-#         last_line = lines[-1].strip() if lines else None
-#         if last_line:
-#             cursor, c = last_line.split(', ')
-#             c = int(c)
-#         else:
-#             cursor, c = None, 1
-# else:
-#     cursor, c = None, 1
-# cursors_out = open(f"{args.cursor_file}", 'a')
-
 db_cursors = cloud_conn.execute(db.text("SELECT cursor_mark, cursor_id FROM tmp_cursor_tracking ORDER BY time DESC LIMIT 1")).fetchone()
 if db_cursors:
     cursor, c = db_cursors
@@ -122,20 +110,22 @@ while more_data:
         'format': 'json', 'pageSize': args.page_size,
         'cursorMark': cursor
     }
-    data = query_europepmc(f"{epmc_base_url}/search", search_params)
+
+    # if error, exit gracefully : this allows us to resume from where we left off in the
+    # event of an error (using the last cursor mark in the database)
+    data = query_europepmc(f"{epmc_base_url}/search", search_params, graceful_exit=True)
 
     limit = limit or data.get('hitCount')
     if cursor is None:
-        print(f"----- Expecting {limit} of {data.get('hitCount')} results!")
+        print(f"--- Expecting {limit} of {data.get('hitCount')} results!")
 
     formatted_results = {'cursor': cursor, 'results': []}
     for result in data['resultList']['result']:
         formatted_results['results'].append({k: result[k] for k in epmc_fields if k in result})
 
-    # with(open(f"{args.outdir}/results.{c}.json", 'w')) as f:
     with(open(generate_json_file(c), 'w')) as f:
         json.dump(formatted_results, f, indent=4)
-        print(f"----- Wrote {args.page_size} results to file {f.name} (cursor: {cursor})")
+        print(f"---- Wrote {args.page_size} results to file {f.name} (cursor: {cursor})")
 
     c += 1
     limit -= args.page_size
@@ -145,6 +135,5 @@ while more_data:
     if not cursor or limit <= 0:
         more_data = False
     else:
-        # cursors_out.write(f"{cursor}, {c}\n")
         cloud_conn.execute(db.text(f"INSERT INTO tmp_cursor_tracking (cursor_mark, cursor_id) VALUES ('{cursor}', {c})"))
         cloud_conn.commit()
