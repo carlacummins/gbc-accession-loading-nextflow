@@ -1,0 +1,32 @@
+# tower.yml
+
+version: 1.0
+
+# Define pipelines
+pipelines:
+  - name: gbc-accession-loading
+    description: "(Test version) Pull text-mined accessions from Europe PMC and load them into the GBC publication analysis database schema"
+    repository: "https://github.com/carlacummins/gbc-accession-loading-nextflow.git"
+    revision: "main"  # Branch, tag, or commit hash
+    workDir: "gs://gbc-epmc-accession-loading/nextflow-test"  # Google Cloud Storage bucket for workflow files
+    # params:
+    #   input: "gs://your-bucket/input-data.txt"
+    #   output: "gs://your-bucket/output-data.txt"
+    computeEnv: my-google-batch-env  # Reference to the compute environment
+
+# Define compute environments
+computeEnvs:
+  - name: my-google-batch-env
+    platform: google-batch
+    config:
+      project: "gbc-publication-analysis"
+      region: "europe-west2"  # Google Cloud region
+      location: "europe-west2"  # Location for the bucket
+      workDir: "gs://gbc-epmc-accession-loading/nextflow-test"  # Work directory in Google Cloud Storage
+      serviceAccount: "699995134443-compute@developer.gserviceaccount.com"
+      headJobCpus: 2  # CPU for the head job
+      headJobMemory: "4 GB"  # Memory for the head job
+      # preRunScript: |
+      #   echo "Pre-run script executed"
+      # postRunScript: |
+      #   echo "Post-run script executed"
