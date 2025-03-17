@@ -7,7 +7,7 @@ process QUERY_EUROPEPMC {
     val page_size
     val limit
     val db
-    val db_creds
+    path(db_creds)
 
     output:
     path("epmc_jsons/**.json"), emit: epmc_jsons

@@ -3,7 +3,7 @@ process WRITE_TO_GBC {
     debug true
 
     input:
-    tuple path(json_file), path(accession_types), val(db), val(db_creds)
+    tuple path(json_file), path(accession_types), val(db), path(db_creds)
 
     output:
     path(summary_file)
